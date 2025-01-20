@@ -8,39 +8,36 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
     // Reference to character controller.
-    CharacterController controller;
+    Rigidbody2D rb2D;
 
     // Initialize input vector.
-    Vector3 inputVector = Vector3.zero;
+    Vector2 moveVector;
 
     // Movement speed of the player.
     [SerializeField] float moveSpeed = 2.0f;
 
     private void Awake()
     {
-        controller = GetComponent<CharacterController>();
+        rb2D = GetComponent<Rigidbody2D>();
 
         // Subscribe to the move event.
-        Actions.MoveEvent += HandleMovement;
+        Actions.MoveEvent += GetInputVector;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
-        // Create a movement vector using the input vector's values.
-        Vector3 movement = new Vector3(inputVector.x, inputVector.y, 0);
-        // Move the player using the input vector.
-        MovePlayer(movement);
+        MovePlayer();
     }
 
-    void MovePlayer(Vector2 direction)
+    void MovePlayer()
     {
-        // Move the player constantly, using the character controller.
-        controller.Move(direction * moveSpeed * Time.deltaTime);
+        // Move the player using rigidbody position and velocity scaled.
+        rb2D.MovePosition(rb2D.position + moveVector * moveSpeed * Time.fixedDeltaTime);
     }
 
-    void HandleMovement(Vector2 inputDirection)
+    void GetInputVector(Vector2 inputDirection)
     {
         // Assign direction of input to the input vector.
-        inputVector = inputDirection;
+        moveVector = inputDirection;
     }
 }
